@@ -6,6 +6,7 @@ import { EmailModule } from './email/email.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validationSchema } from './config/validationSchema';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         migrationsTableName: 'migration',
       }),
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

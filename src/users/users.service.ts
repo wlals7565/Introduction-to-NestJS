@@ -1,10 +1,16 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/email.service';
 import * as uuid from 'uuid';
 import { UserEntity } from './entities/user.entity';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { ulid } from 'ulid';
+import { AuthService } from 'src/auth/auth.service';
+import { UserInfo } from './interfaces/userInfo';
 @Injectable()
 export class UsersService {
   constructor(
@@ -12,11 +18,12 @@ export class UsersService {
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
     private dataSource: DataSource,
+    private authService: AuthService,
   ) {}
 
   async createUser(name: string, email: string, password: string) {
-    const UserExist = await this.checkUserExist(email);
-    if (UserExist) {
+    const userExist = await this.checkUserExist(email);
+    if (userExist) {
       throw new UnprocessableEntityException(
         '해당 이메일은 이미 가입되어 있습니다.',
       );
@@ -29,23 +36,58 @@ export class UsersService {
   }
 
   async verifyEmail(signupVerifyToken: string): Promise<string> {
-    throw new Error('Method not implemented');
+    const user = await this.usersRepository.findOne({
+      where: { signupVerifyToken },
+    });
+
+    if (!user) {
+      throw new NotFoundException('유저가 존재하지 않습니다.');
+    }
+
+    return this.authService.login({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
   }
 
   async login(email: string, password: string): Promise<string> {
-    throw new Error('Method not implemented');
+    const user = await this.usersRepository.findOne({
+      where: { email, password },
+    });
+
+    if (!user) {
+      throw new NotFoundException('유저가 존재하지 않습니다.');
+    }
+
+    return this.authService.login({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    });
   }
 
-  async getUserInfo(userId: string): Promise<string> {
-    throw new Error('Method not implemented');
+  async getUserInfo(userId: string): Promise<UserInfo> {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('유저가 존재하지 않습니다.');
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
   }
 
   private async checkUserExist(emailAddress: string) {
     const user = await this.usersRepository.findOne({
       where: { email: emailAddress },
     });
-
-    return user !== undefined;
+    return user !== null;
   }
 
   private async saveUser(
