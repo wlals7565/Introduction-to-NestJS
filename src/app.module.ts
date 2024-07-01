@@ -7,6 +7,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validationSchema } from './config/validationSchema';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+//import * as winston from 'winston';
+/*import {
+  utilities as nestWinstonModuleUtilities,
+  WinstonModule,
+} from 'nest-winston';*/
 
 @Module({
   imports: [
@@ -39,6 +44,19 @@ import { AuthModule } from './auth/auth.module';
         migrationsTableName: 'migration',
       }),
     }),
+    /*WinstonModule.forRoot({
+      transports: [
+        new winston.transports.Console({
+          level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            nestWinstonModuleUtilities.format.nestLike('MyCustomLogging', {
+              prettyPrint: true,
+            }),
+          ),
+        }),
+      ],
+    }),*/
     AuthModule,
   ],
   controllers: [AppController],
