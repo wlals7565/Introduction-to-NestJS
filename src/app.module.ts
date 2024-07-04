@@ -12,6 +12,9 @@ import { AuthModule } from './auth/auth.module';
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
 } from 'nest-winston';*/
+import { ExceptionModuleModule } from './exception/exception.module.module';
+import { LoggingModule } from './logging/logging.module';
+import { BatchModule } from './batch/batch.module';
 
 @Module({
   imports: [
@@ -58,6 +61,9 @@ import { AuthModule } from './auth/auth.module';
       ],
     }),*/
     AuthModule,
+    ExceptionModuleModule,
+    LoggingModule,
+    BatchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

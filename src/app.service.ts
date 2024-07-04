@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  private readonly logger = new Logger(AppService.name);
+  private readonly logger = new Logger();
 
   getHello(): string {
     this.logger.error('level: error');
