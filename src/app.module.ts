@@ -15,9 +15,15 @@ import { AuthModule } from './auth/auth.module';
 import { ExceptionModuleModule } from './exception/exception.module.module';
 import { LoggingModule } from './logging/logging.module';
 import { BatchModule } from './batch/batch.module';
+import { HealthCheckController } from './health-check/Dog.healthCheck.controller';
+import { TerminusModule } from '@nestjs/terminus';
+import { HttpModule } from '@nestjs/axios';
+import { DogHealthIndicator } from './health-check/health-check.service';
 
 @Module({
   imports: [
+    HttpModule,
+    TerminusModule,
     UsersModule,
     EmailModule,
     ConfigModule.forRoot({
@@ -65,7 +71,7 @@ import { BatchModule } from './batch/batch.module';
     LoggingModule,
     BatchModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, HealthCheckController],
+  providers: [AppService, DogHealthIndicator],
 })
 export class AppModule {}
